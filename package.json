@@ -4,7 +4,7 @@
     "description": "服务端渲染探索项目",
     "main": "index.js",
     "scripts": {
-        "serve": "nodemon ./server/index.js",
+        "serve": "pm2 stop ./server/index.js",
         "client": "node client/index.js"
     },
     "author": "",
@@ -20,6 +20,5 @@
         "doc": "docs"
     },
     "devDependencies": {
-        "nodemon": "^2.0.1"
     }
 }
