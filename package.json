@@ -4,7 +4,7 @@
     "description": "服务端渲染探索项目",
     "main": "index.js",
     "scripts": {
-        "server": "node server/index.js",
+        "serve": "nodemon ./server/index.js",
         "client": "node client/index.js"
     },
     "author": "",
@@ -16,5 +16,8 @@
     },
     "directories": {
         "doc": "docs"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.1"
     }
 }

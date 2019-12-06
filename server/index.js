@@ -38,4 +38,6 @@ app.on('error', (err, ctx) => {
 })
 
 app.listen(3001);
-console.log('server listening in http://47.88.104.149:3001/')
+console.log('server listening in http://localhost:3001/')
+
+console.log('xxx')
