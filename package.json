@@ -1,19 +1,19 @@
 {
-    "name": "example-ssr",
-    "version": "1.0.0",
-    "description": "服务端渲染探索项目",
-    "main": "index.js",
-    "scripts": {
-      "see": "http-server pages",
-      "start": "node server.js"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-      "http-server": "^0.12.0",
-      "koa": "^2.11.0"
-    },
-    "directories": {
-      "doc": "docs"
-    }
+  "name": "example-ssr",
+  "version": "1.0.0",
+  "description": "服务端渲染探索项目",
+  "main": "index.js",
+  "scripts": {
+    "see": "http-server pages",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^0.12.0",
+    "koa": "^2.11.0"
+  },
+  "directories": {
+    "doc": "docs"
   }
+}
