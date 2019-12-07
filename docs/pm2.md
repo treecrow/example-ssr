@@ -7,6 +7,14 @@
 | command                                                 | more                                                                                       |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | start [options][name/namespace/file/ecosystem/id...]    | 启动指定应用                                                                               |
+| stop [options] <id/name/namespace/all/json/stdin...>    | 停止指定应用                                                                               |
+| reload <name/all>                                       | 重启指定应用                                                                               |
+| delete/del <name/id/script/all/json/stdin...>           | 删除指定应用，如果修改应用配置行为，最好先删除应用后，重新启动方才生效，如修改脚本入口文件 |
+| show <name/id>                                          | 显示指定应用详情                                                                           |
+| monit                                                   | 监控各个应用进程 cpu 和 memory 使用情况(命令行仪表盘)                                      |
+| logs [options][id/name]                                 | 查看指定应用的日志，即标准输出和标准错误                                                   |
+| kill                                                    | 杀掉 pm2 管理的所有进程                                                                    |
+| ===                                                     | ===                                                                                        |
 | trigger <proc_name> <action_name> [params]              | trigger process action                                                                     |
 | deploy <file/environment>                               | deploy your json                                                                           |
 | startOrRestart <json>                                   | start or restart JSON file                                                                 |
@@ -14,15 +22,12 @@
 | pid [app_name]                                          | return pid of [app_name] or all                                                            |
 | create                                                  | return pid of [app_name] or all                                                            |
 | startOrGracefulReload <json>                            | start or gracefully reload JSON file                                                       |
-| stop [options] <id/name/namespace/all/json/stdin...>    | 停止指定应用                                                                               |
 | restart [options] <id/name/namespace/all/json/stdin...> | restart a process                                                                          |
 | scale <app_name> <number>                               | scale up/down a process in cluster mode depending on total_number param                    |
 | profile:mem [time]                                      | Sample PM2 heap memory                                                                     |
 | profile:cpu [time]                                      | Profile PM2 cpu                                                                            |
-| reload <name/all>                                       | 重启指定应用                                                                               |
 | id <name>                                               | get process id by name                                                                     |
 | inspect <name>                                          | inspect a process                                                                          |
-| delete/del <name/id/script/all/json/stdin...>           | 删除指定应用，如果修改应用配置行为，最好先删除应用后，重新启动方才生效，如修改脚本入口文件 |
 | sendSignal <signal> <pm2_id/name>                       | send a system signal to the target process                                                 |
 | ping                                                    | ping pm2 daemon - if not up it will launch it                                              |
 | updatePM2                                               | update in-memory PM2 with local PM2                                                        |
@@ -61,7 +66,6 @@
 | describe <name/id>                                      | describe all parameters of a process                                                       |
 | desc <name/id>                                          | (alias) describe all parameters of a process                                               |
 | info <name/id>                                          | (alias) describe all parameters of a process                                               |
-| show <name/id>                                          | 显示指定应用详情                                                                           |
 | env <id>                                                | list all environment variables of a process id                                             |
 | list/ls                                                 | list all processes                                                                         |
 | l                                                       | (alias) list all processes                                                                 |
@@ -71,13 +75,10 @@
 | sysmonit                                                | start system monitoring daemon                                                             |
 | slist/sysinfos [options]                                | list system infos in JSON                                                                  |
 | prettylist                                              | print json in a prettified JSON                                                            |
-| monit                                                   | 监控各个应用进程 cpu 和 memory 使用情况                                                    |
 | imonit                                                  | launch legacy termcaps monitoring                                                          |
 | dashboard/dash                                          | launch dashboard with monitoring and logs                                                  |
 | flush [api]                                             | flush logs                                                                                 |
 | reloadLogs                                              | reload all logs                                                                            |
-| logs [options][id/name]                                 | 查看指定应用的日志，即标准输出和标准错误                                                   |
-| kill                                                    | 杀掉 pm2 管理的所有进程                                                                    |
 | pull <name> [commit_id]                                 | updates repository for a given app                                                         |
 | forward <name>                                          | updates repository to the next commit for a given app                                      |
 | backward <name>                                         | downgrades repository to the previous commit for a given app                               |
@@ -90,17 +91,20 @@
 
 | option                              | more                                                                                       |
 | ----------------------------------- | ------------------------------------------------------------------------------------------ |
+| -n --name <name>                    | 应用的名称                                                                                 |
+| --interpreter <interpreter>         | 设置一个用于运行程序的解释器, default: node                                                |
+| -o --output <path>                  | 标准输出日志文件的路径                                                                     |
+| -e --error <path>                   | 错误输出日志文件的路径                                                                     |
+| -i --instances <number>             | 启用多少个实例，可用于负载均衡。如果-i 0 或者-i max，则根据当前机器核数确定实例数目。      |
+| --watch [paths]                     | 监听应用目录的变化，一旦发生变化，自动重启                                                 |
+| ===                                 | ===                                                                                        |
 | -V, --version                       | output the version number                                                                  |
 | -v --version                        | print pm2 version                                                                          |
 | -s --silent                         | hide all messages                                                                          |
 | --ext <extensions>                  | watch only this file extensions                                                            |
-| -n --name <name>                    | 应用的名称                                                                                 |
 | -m --mini-list                      | display a compacted list without formatting                                                |
-| --interpreter <interpreter>         | 设置一个用于运行程序的解释器, default: node                                                |
 | --interpreter-args <arguments>      | set arguments to pass to the interpreter (alias of --node-args)                            |
 | --node-args <node_args>             | space delimited arguments to pass to node                                                  |
-| -o --output <path>                  | 标准输出日志文件的路径                                                                     |
-| -e --error <path>                   | 错误输出日志文件的路径                                                                     |
 | -l --log [path]                     | specify log file which gathers both stdout and stderr                                      |
 | --log-type <type>                   | specify log output style (raw by default, json optional)                                   |
 | --log-date-format <date format>     | add custom prefix timestamp to logs                                                        |
@@ -109,7 +113,6 @@
 | --env <environment_name>            | specify which set of environment variables from ecosystem file must be injected            |
 | -a --update-env                     | force an update of the environment with restart/reload (-a <=> apply)                      |
 | -f --force                          | force actions                                                                              |
-| -i --instances <number>             | 启用多少个实例，可用于负载均衡。如果-i 0 或者-i max，则根据当前机器核数确定实例数目。      |
 | --parallel <number>                 | number of parallel actions (for restart/reload)                                            |
 | --shutdown-with-message             | shutdown an application with process.send('shutdown') instead of process.kill(pid, SIGINT) |
 | -p --pid <pid>                      | specify pid file                                                                           |
@@ -136,7 +139,6 @@
 | --disable-source-map-support        | force source map support                                                                   |
 | --wait-ready                        | ask pm2 to wait for ready event from your app                                              |
 | --merge-logs                        | merge logs from different instances but keep error and out separated                       |
-| --watch [paths]                     | 监听应用目录的变化，一旦发生变化，自动重启                                                 |
 | --ignore-watch <folders/files>      | List of paths to ignore (name or regex)                                                    |
 | --watch-delay <delay>               | specify a restart delay after changing files (--watch-delay 4 (in sec) or 4000ms)          |
 | --no-color                          | skip colors                                                                                |
