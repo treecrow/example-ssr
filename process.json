@@ -1,0 +1,16 @@
+{
+    "apps": [
+        {
+            "name": "example-ssr",
+            "script": "./server/index.js",
+            "watch": "./server",
+            "instances": 0,
+            "env": {},
+            "max_memory_restart": "300M",
+            "log_date_format": "\\[YYYY-MM-DD HH:mm:ss\\]",
+            "error_file": "./logs/pm-err.log",
+            "out_file": "./logs/pm-out.log",
+            "exec_mode": "cluster"
+        }
+    ]
+}

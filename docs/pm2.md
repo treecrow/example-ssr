@@ -9,12 +9,18 @@
 | start [options][name/namespace/file/ecosystem/id...]    | 启动指定应用                                                                               |
 | stop [options] <id/name/namespace/all/json/stdin...>    | 停止指定应用                                                                               |
 | reload <name/all>                                       | 重启指定应用                                                                               |
+| restart [options] <id/name/namespace/all/json/stdin...> | ^                                                                                          |
 | delete/del <name/id/script/all/json/stdin...>           | 删除指定应用，如果修改应用配置行为，最好先删除应用后，重新启动方才生效，如修改脚本入口文件 |
 | show <name/id>                                          | 显示指定应用详情                                                                           |
+| describe <name/id>                                      | 查看某个进程/应用具体情况                                                                  |
+| list/ls                                                 | 列出所有正在运行的 pm2 进程                                                                |
+| kill                                                    | 杀掉 pm2 管理的所有进程                                                                    |
 | monit                                                   | 监控各个应用进程 cpu 和 memory 使用情况(命令行仪表盘)                                      |
 | logs [options][id/name]                                 | 查看指定应用的日志，即标准输出和标准错误                                                   |
-| kill                                                    | 杀掉 pm2 管理的所有进程                                                                    |
 | ===                                                     | ===                                                                                        |
+| startup [platform]                                      | enable the pm2 startup hook                                                                |
+| unstartup [platform]                                    | disable the pm2 startup hook                                                               |
+| dump/save [options]                                     | dump all processes for resurrecting them later                                             |
 | trigger <proc_name> <action_name> [params]              | trigger process action                                                                     |
 | deploy <file/environment>                               | deploy your json                                                                           |
 | startOrRestart <json>                                   | start or restart JSON file                                                                 |
@@ -22,7 +28,6 @@
 | pid [app_name]                                          | return pid of [app_name] or all                                                            |
 | create                                                  | return pid of [app_name] or all                                                            |
 | startOrGracefulReload <json>                            | start or gracefully reload JSON file                                                       |
-| restart [options] <id/name/namespace/all/json/stdin...> | restart a process                                                                          |
 | scale <app_name> <number>                               | scale up/down a process in cluster mode depending on total_number param                    |
 | profile:mem [time]                                      | Sample PM2 heap memory                                                                     |
 | profile:cpu [time]                                      | Profile PM2 cpu                                                                            |
@@ -53,21 +58,16 @@
 | plus/register [options][command] [option]               | enable pm2 plus                                                                            |
 | login                                                   | Login to pm2 plus                                                                          |
 | logout                                                  | Logout from pm2 plus                                                                       |
-| dump/save [options]                                     | dump all processes for resurrecting them later                                             |
 | cleardump                                               | Create empty dump file                                                                     |
 | send <pm_id> <line>                                     | send stdin to <pm_id>                                                                      |
 | attach <pm_id> [comman]                                 | attach stdin/stdout to application identified by <pm_id>                                   |
 | resurrect                                               | resurrect previously dumped processes                                                      |
-| unstartup [platform]                                    | disable the pm2 startup hook                                                               |
-| startup [platform]                                      | enable the pm2 startup hook                                                                |
 | logrotate                                               | copy default logrotate configuration                                                       |
 | ecosystem/init [mode]                                   | generate a process conf file. (mode = null or simple)                                      |
 | reset <name/id/all>                                     | reset counters for process                                                                 |
-| describe <name/id>                                      | describe all parameters of a process                                                       |
 | desc <name/id>                                          | (alias) describe all parameters of a process                                               |
 | info <name/id>                                          | (alias) describe all parameters of a process                                               |
 | env <id>                                                | list all environment variables of a process id                                             |
-| list/ls                                                 | list all processes                                                                         |
 | l                                                       | (alias) list all processes                                                                 |
 | ps                                                      | (alias) list all processes                                                                 |
 | status                                                  | (alias) list all processes                                                                 |
@@ -92,11 +92,11 @@
 | option                              | more                                                                                       |
 | ----------------------------------- | ------------------------------------------------------------------------------------------ |
 | -n --name <name>                    | 应用的名称                                                                                 |
-| --interpreter <interpreter>         | 设置一个用于运行程序的解释器, default: node                                                |
-| -o --output <path>                  | 标准输出日志文件的路径                                                                     |
-| -e --error <path>                   | 错误输出日志文件的路径                                                                     |
 | -i --instances <number>             | 启用多少个实例，可用于负载均衡。如果-i 0 或者-i max，则根据当前机器核数确定实例数目。      |
 | --watch [paths]                     | 监听应用目录的变化，一旦发生变化，自动重启                                                 |
+| -o --output <path>                  | 标准输出日志文件的路径                                                                     |
+| -e --error <path>                   | 错误输出日志文件的路径                                                                     |
+| --interpreter <interpreter>         | 设置一个用于运行程序的解释器, default: node                                                |
 | ===                                 | ===                                                                                        |
 | -V, --version                       | output the version number                                                                  |
 | -v --version                        | print pm2 version                                                                          |
@@ -157,9 +157,29 @@
 
 ## config list
 
-| key | more |
-| --- | ---- |
-
+| key                | more                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| name               | 应用进程名称                                                                                |
+| script             | 启动脚本路径                                                                                |
+| cwd                | 应用启动的路径                                                                              |
+| args               | 传递给脚本的参数                                                                            |
+| interpreter        | 指定的脚本解释器                                                                            |
+| interpreter_args   | 传递给解释器的参数                                                                          |
+| instances          | 应用启动实例个数，仅在 cluster 模式有效，默认为 fork                                        |
+| exec_mode          | 应用启动模式，支持 fork 和 cluster 模式                                                     |
+| watch              | 监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启                                    |
+| ignore_watch       | 忽略监听的文件夹，支持正则表达式                                                            |
+| max_memory_restart | 最大内存限制数，超出自动重启                                                                |
+| env                | 环境变量，object 类型，如{"NODE_ENV":"production", "ID": "42"}                              |
+| log_date_format    | 指定日志日期格式，如 YYYY-MM-DD HH:mm:ss；                                                  |
+| error_file         | 记录标准错误流，\$HOME/.pm2/logs/XXXerr.log)，代码错误可在此文件查找                        |
+| out_file           | 记录标准输出流，\$HOME/.pm2/logs/XXXout.log)，如应用打印大量的标准输出，会导致 pm2 日志过大 |
+| min_uptime         | 应用运行少于时间被认为是异常启动                                                            |
+| max_restarts       | 最大异常重启次数，即小于 min_uptime 运行时间重启次数                                        |
+| autorestart        | 默认为 true, 发生异常的情况下自动重启                                                       |
+| cron_restart       | crontab 时间格式重启应用，目前只支持 cluster 模式                                           |
+| force              | 默认 false，如果 true，可以重复启动一个脚本。pm2 不建议这么做                               |
+| restart_delay      | 异常重启情况下，延时重启时间                                                                |
 
 ---
 

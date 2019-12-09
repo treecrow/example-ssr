@@ -4,7 +4,7 @@
     "description": "服务端渲染探索项目",
     "main": "index.js",
     "scripts": {
-        "serve": "pm2 start ./server/index.js",
+        "serve": "pm2 start ./process.json",
         "client": "node client/index.js"
     },
     "author": "",
