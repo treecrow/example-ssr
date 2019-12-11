@@ -5,7 +5,9 @@
             "script": "./server/index.js",
             "watch": "./server",
             "instances": 0,
-            "env": {},
+            "env": {
+                "NODE_ENV": "development"
+            },
             "max_memory_restart": "300M",
             "log_date_format": "\\[YYYY-MM-DD HH:mm:ss\\]",
             "error_file": "./logs/pm-err.log",
