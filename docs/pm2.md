@@ -34,6 +34,8 @@
 | ^             | reset <name/id/all>                                     | 重置重启数量                                                                               |
 | ^             | ping                                                    | ping 一下 pm2 守护进程，如果没有启动会启动它                                               |
 | 影响-应用     | sendSignal <signal> <pm2_id/name>                       | 发送系统信号到一个进程/应用                                                                |
+| git           | pull <name> [commit_id]                                 | 给指定的应用运行 `git pull`                                                                |
+| ^             | forward <name>                                          | updates repository to the next commit for a given app                                      |
 | ===           | ===                                                     | ===                                                                                        |
 | ^             | trigger <proc_name> <action_name> [params]              | trigger process action                                                                     |
 | ^             | deploy <file/environment>                               | deploy your json                                                                           |
@@ -79,8 +81,6 @@
 | ^             | slist/sysinfos [options]                                | list system infos in JSON                                                                  |
 | ^             | imonit                                                  | launch legacy termcaps monitoring                                                          |
 | ^             | dashboard/dash                                          | launch dashboard with monitoring and logs                                                  |
-| ^             | pull <name> [commit_id]                                 | updates repository for a given app                                                         |
-| ^             | forward <name>                                          | updates repository to the next commit for a given app                                      |
 | ^             | backward <name>                                         | downgrades repository to the previous commit for a given app                               |
 | ^             | deepUpdate                                              | performs a deep update of PM2                                                              |
 | ^             | serve/expose [options][path] [port]                     | serve a directory over http via port                                                       |
@@ -101,6 +101,7 @@
 | 启动方式     | -i --instances <number>             | 启用多少个实例，可用于负载均衡。如果-i 0 或者-i max，则根据当前机器核数确定实例数目。      |
 | ^            | --no-daemon                         | 如果 pm2 进程守护没有启动的话会启动 pm2 进程守护                                           |
 | ^            | --watch [paths]                     | 监听应用目录的变化，一旦发生变化，自动重启                                                 |
+| ^            | --no-vizion                         | 以没有版本控制的方式启动一个应用                                                           |
 | 日志         | -l --log [path]                     | 整合标准输出和错误输出日志文件的路径                                                       |
 | ^            | -o --output <path>                  | 标准输出日志文件的路径                                                                     |
 | ^            | -e --error <path>                   | 错误输出日志文件的路径                                                                     |
@@ -110,6 +111,7 @@
 | ^            | --restart-delay <delay>             | 重启之间延迟的时间（milliseconds）                                                         |
 | ^            | --no-autorestart                    | 不允许自动重启                                                                             |
 | ^            | -c --cron <cron_pattern>            | 基于 cron 表达式重启应用                                                                   |
+| jsonConfig   | --only <application-name>           | 使用 pm2 json 配置文件,只启动指定的一个应用                                                |
 | ===          | ===                                 | ===                                                                                        |
 | ^            | -s --silent                         | hide all messages                                                                          |
 | ^            | --ext <extensions>                  | watch only this file extensions                                                            |
@@ -138,14 +140,12 @@
 | ^            | --service-name <name>               | define service name when generating startup script                                         |
 | ^            | -w --write                          | write configuration in local folder                                                        |
 | ^            | --source-map-support                | force source map support                                                                   |
-| ^            | --only <application-name>           | with json declaration, allow to only act on one application                                |
 | ^            | --disable-source-map-support        | force source map support                                                                   |
 | ^            | --wait-ready                        | ask pm2 to wait for ready event from your app                                              |
 | ^            | --merge-logs                        | merge logs from different instances but keep error and out separated                       |
 | ^            | --ignore-watch <folders/files>      | List of paths to ignore (name or regex)                                                    |
 | ^            | --watch-delay <delay>               | specify a restart delay after changing files (--watch-delay 4 (in sec) or 4000ms)          |
 | ^            | --no-color                          | skip colors                                                                                |
-| ^            | --no-vizion                         | start an app without vizion feature (versioning control)                                   |
 | ^            | --no-treekill                       | Only kill the main process, not detached children                                          |
 | ^            | --no-pmx                            | start an app without pmx                                                                   |
 | ^            | --no-automation                     | start an app without pmx                                                                   |
@@ -156,31 +156,40 @@
 | ^            | --event-loop-inspector              | enable event-loop-inspector dump in pmx                                                    |
 | ^            | --deep-monitoring                   | enable all monitoring tools (equivalent to --v8 --event-loop-inspector --trace)            |
 
-## config list
+## [config list](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/#attributes-available)
 
-| key                | more                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------- |
-| name               | 应用进程名称                                                                                |
-| script             | 启动脚本路径                                                                                |
-| cwd                | 应用启动的路径                                                                              |
-| args               | 传递给脚本的参数                                                                            |
-| interpreter        | 指定的脚本解释器                                                                            |
-| interpreter_args   | 传递给解释器的参数                                                                          |
-| instances          | 应用启动实例个数，仅在 cluster 模式有效，默认为 fork                                        |
-| exec_mode          | 应用启动模式，支持 fork 和 cluster 模式                                                     |
-| watch              | 监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启                                    |
-| ignore_watch       | 忽略监听的文件夹，支持正则表达式                                                            |
-| max_memory_restart | 最大内存限制数，超出自动重启                                                                |
-| env                | 环境变量，object 类型，如{"NODE_ENV":"production", "ID": "42"}                              |
-| log_date_format    | 指定日志日期格式，如 YYYY-MM-DD HH:mm:ss；                                                  |
-| error_file         | 记录标准错误流，\$HOME/.pm2/logs/XXXerr.log)，代码错误可在此文件查找                        |
-| out_file           | 记录标准输出流，\$HOME/.pm2/logs/XXXout.log)，如应用打印大量的标准输出，会导致 pm2 日志过大 |
-| min_uptime         | 应用运行少于时间被认为是异常启动                                                            |
-| max_restarts       | 最大异常重启次数，即小于 min_uptime 运行时间重启次数                                        |
-| autorestart        | 默认为 true, 发生异常的情况下自动重启                                                       |
-| cron_restart       | crontab 时间格式重启应用，目前只支持 cluster 模式                                           |
-| force              | 默认 false，如果 true，可以重复启动一个脚本。pm2 不建议这么做                               |
-| restart_delay      | 异常重启情况下，延时重启时间                                                                |
+| class             | key                | more                                                                                        |
+| ----------------- | ------------------ | ------------------------------------------------------------------------------------------- |
+| 通用              | name               | 应用进程名称                                                                                |
+| ^                 | script             | 启动脚本路径                                                                                |
+| ^                 | cwd                | 应用启动的路径                                                                              |
+| ^                 | args               | 传递给脚本的参数                                                                            |
+| ^                 | interpreter        | 指定的脚本解释器                                                                            |
+| ^                 | interpreter_args   | 传递给解释器的参数                                                                          |
+| ^                 | node_args          | ^                                                                                           |
+| Advanced features | instances          | 应用启动实例个数，仅在 cluster 模式有效                                                     |
+| ^                 | exec_mode          | 应用启动模式，支持 fork 和 cluster 模式                                                     |
+| ^                 | watch              | 监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启                                    |
+| ^                 | ignore_watch       | 忽略监听的文件夹，支持正则表达式                                                            |
+| ^                 | max_memory_restart | 最大内存限制数，超出自动重启                                                                |
+| ^                 | env                | 环境变量，object 类型，如{"NODE_ENV":"production", "ID": "42"}                              |
+| ^                 | `env_`             | 环境变量                                                                                    |
+| ^                 | source_map_support | 是否支持 source map 文件                                                                    |
+| ^                 | instance_var       | -                                                                                           |
+| Log files         | log_date_format    | 指定日志日期格式，如 YYYY-MM-DD HH:mm:ss；                                                  |
+| ^                 | error_file         | 记录标准错误流，\$HOME/.pm2/logs/XXXerr.log)，代码错误可在此文件查找                        |
+| ^                 | out_file           | 记录标准输出流，\$HOME/.pm2/logs/XXXout.log)，如应用打印大量的标准输出，会导致 pm2 日志过大 |
+| ^                 | combine_logs       | 是否合并日志（如果合并日志的话，不同进程公用一个日志文件）                                  |
+| ^                 | merge_logs         | ^                                                                                           |
+| ^                 | pid_file           | pid file path (default to \$HOME/.pm2/pid/app-pm_id.pid)                                    |
+| Control flow      | -                  | -                                                                                           |
+| ===               | ===                | ===                                                                                         |
+| ^                 | min_uptime         | 应用运行少于时间被认为是异常启动                                                            |
+| ^                 | max_restarts       | 最大异常重启次数，即小于 min_uptime 运行时间重启次数                                        |
+| ^                 | autorestart        | 默认为 true, 发生异常的情况下自动重启                                                       |
+| ^                 | cron_restart       | crontab 时间格式重启应用，目前只支持 cluster 模式                                           |
+| ^                 | force              | 默认 false，如果 true，可以重复启动一个脚本。pm2 不建议这么做                               |
+| ^                 | restart_delay      | 异常重启情况下，延时重启时间                                                                |
 
 ---
 

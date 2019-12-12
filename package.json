@@ -4,7 +4,8 @@
     "description": "服务端渲染探索项目",
     "main": "index.js",
     "scripts": {
-        "server": "pm2 delete ./process.json && pm2 start ./process.json",
+        "server:local": "pm2 delete process.json && pm2 start process.json --env development",
+        "server:online": "pm2 delete process.json && pm2 start process.json --env production",
         "client": "node client/index.js"
     },
     "author": "",
@@ -19,6 +20,5 @@
     "directories": {
         "doc": "docs"
     },
-    "devDependencies": {
-    }
+    "devDependencies": {}
 }
