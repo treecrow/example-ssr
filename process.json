@@ -3,16 +3,19 @@
         {
             "name": "example-ssr",
             "script": "./server/index.js",
-            "watch": "./server",
-            "instances": 0,
+            "watch": true,
+            "exec_mode": "cluster",
+            "instances": 2,
             "env": {
                 "NODE_ENV": "development"
             },
+            "env_production": {
+                "NODE_ENV": "production"
+            },
             "max_memory_restart": "300M",
-            "log_date_format": "\\[YYYY-MM-DD HH:mm:ss\\]",
-            "error_file": "./logs/pm-err.log",
-            "out_file": "./logs/pm-out.log",
-            "exec_mode": "cluster"
+            "time": true,
+            "error_file": "./logs/pm-error.log",
+            "out_file": "./logs/pm-out.log"
         }
     ]
 }
