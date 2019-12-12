@@ -32,6 +32,8 @@
 | ^             | unstartup [platform]                                    | 取消开机自动启动                                                                           |
 | 配置          | scale <app_name> <number>                               | 调整工作线程数量                                                                           |
 | ^             | reset <name/id/all>                                     | 重置重启数量                                                                               |
+| ^             | ping                                                    | ping 一下 pm2 守护进程，如果没有启动会启动它                                               |
+| 影响-应用     | sendSignal <signal> <pm2_id/name>                       | 发送系统信号到一个进程/应用                                                                |
 | ===           | ===                                                     | ===                                                                                        |
 | ^             | trigger <proc_name> <action_name> [params]              | trigger process action                                                                     |
 | ^             | deploy <file/environment>                               | deploy your json                                                                           |
@@ -44,8 +46,6 @@
 | ^             | profile:cpu [time]                                      | Profile PM2 cpu                                                                            |
 | ^             | id <name>                                               | get process id by name                                                                     |
 | ^             | inspect <name>                                          | inspect a process                                                                          |
-| ^             | sendSignal <signal> <pm2_id/name>                       | send a system signal to the target process                                                 |
-| ^             | ping                                                    | ping pm2 daemon - if not up it will launch it                                              |
 | ^             | install/module:install [options] <module/git:/>         | install or update a module and run it forever                                              |
 | ^             | module:update <module/git:/>                            | update a module and run it forever                                                         |
 | ^             | module:generate [app_name]                              | Generate a sample module in current folder                                                 |
@@ -99,7 +99,7 @@
 | -            | --env <environment_name>            | specify which set of environment variables from ecosystem file must be injected            |
 | 应用         | -n --name <name>                    | 应用的名称                                                                                 |
 | 启动方式     | -i --instances <number>             | 启用多少个实例，可用于负载均衡。如果-i 0 或者-i max，则根据当前机器核数确定实例数目。      |
-| ^            | --no-daemon                         | run pm2 daemon in the foreground if it doesn't exist already                               |
+| ^            | --no-daemon                         | 如果 pm2 进程守护没有启动的话会启动 pm2 进程守护                                           |
 | ^            | --watch [paths]                     | 监听应用目录的变化，一旦发生变化，自动重启                                                 |
 | 日志         | -l --log [path]                     | 整合标准输出和错误输出日志文件的路径                                                       |
 | ^            | -o --output <path>                  | 标准输出日志文件的路径                                                                     |
