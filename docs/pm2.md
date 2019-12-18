@@ -158,38 +158,52 @@
 
 ## [config list](https://pm2.keymetrics.io/docs/usage/pm2-doc-single-page/#attributes-available)
 
-| class             | key                | more                                                                                        |
-| ----------------- | ------------------ | ------------------------------------------------------------------------------------------- |
-| 通用              | name               | 应用进程名称                                                                                |
-| ^                 | script             | 启动脚本路径                                                                                |
-| ^                 | cwd                | 应用启动的路径                                                                              |
-| ^                 | args               | 传递给脚本的参数                                                                            |
-| ^                 | interpreter        | 指定的脚本解释器                                                                            |
-| ^                 | interpreter_args   | 传递给解释器的参数                                                                          |
-| ^                 | node_args          | ^                                                                                           |
-| Advanced features | instances          | 应用启动实例个数，仅在 cluster 模式有效                                                     |
-| ^                 | exec_mode          | 应用启动模式，支持 fork 和 cluster 模式                                                     |
-| ^                 | watch              | 监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启                                    |
-| ^                 | ignore_watch       | 忽略监听的文件夹，支持正则表达式                                                            |
-| ^                 | max_memory_restart | 最大内存限制数，超出自动重启                                                                |
-| ^                 | env                | 环境变量，object 类型，如{"NODE_ENV":"production", "ID": "42"}                              |
-| ^                 | `env_`             | 环境变量                                                                                    |
-| ^                 | source_map_support | 是否支持 source map 文件                                                                    |
-| ^                 | instance_var       | -                                                                                           |
-| Log files         | log_date_format    | 指定日志日期格式，如 YYYY-MM-DD HH:mm:ss；                                                  |
-| ^                 | error_file         | 记录标准错误流，\$HOME/.pm2/logs/XXXerr.log)，代码错误可在此文件查找                        |
-| ^                 | out_file           | 记录标准输出流，\$HOME/.pm2/logs/XXXout.log)，如应用打印大量的标准输出，会导致 pm2 日志过大 |
-| ^                 | combine_logs       | 是否合并日志（如果合并日志的话，不同进程公用一个日志文件）                                  |
-| ^                 | merge_logs         | ^                                                                                           |
-| ^                 | pid_file           | pid file path (default to \$HOME/.pm2/pid/app-pm_id.pid)                                    |
-| Control flow      | -                  | -                                                                                           |
-| ===               | ===                | ===                                                                                         |
-| ^                 | min_uptime         | 应用运行少于时间被认为是异常启动                                                            |
-| ^                 | max_restarts       | 最大异常重启次数，即小于 min_uptime 运行时间重启次数                                        |
-| ^                 | autorestart        | 默认为 true, 发生异常的情况下自动重启                                                       |
-| ^                 | cron_restart       | crontab 时间格式重启应用，目前只支持 cluster 模式                                           |
-| ^                 | force              | 默认 false，如果 true，可以重复启动一个脚本。pm2 不建议这么做                               |
-| ^                 | restart_delay      | 异常重启情况下，延时重启时间                                                                |
+| class             | key                | more                                                                                                           |
+| ----------------- | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| 通用              | name               | 应用进程名称                                                                                                   |
+| ^                 | script             | 启动脚本路径                                                                                                   |
+| ^                 | cwd                | 应用启动的路径                                                                                                 |
+| ^                 | args               | 传递给脚本的参数                                                                                               |
+| ^                 | interpreter        | 指定的脚本解释器                                                                                               |
+| ^                 | interpreter_args   | 传递给解释器的参数                                                                                             |
+| ^                 | node_args          | ^                                                                                                              |
+| Advanced features | instances          | 应用启动实例个数，仅在 cluster 模式有效                                                                        |
+| ^                 | exec_mode          | 应用启动模式，支持 fork 和 cluster 模式                                                                        |
+| ^                 | watch              | 监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启                                                       |
+| ^                 | ignore_watch       | 忽略监听的文件夹，支持正则表达式                                                                               |
+| ^                 | max_memory_restart | 最大内存限制数，超出自动重启                                                                                   |
+| ^                 | env                | 环境变量，object 类型，如{"NODE_ENV":"production", "ID": "42"}                                                 |
+| ^                 | `env_`             | 环境变量                                                                                                       |
+| ^                 | source_map_support | 是否支持 source map 文件                                                                                       |
+| ^                 | instance_var       | -                                                                                                              |
+| Log files         | log_date_format    | 指定日志日期格式，如 YYYY-MM-DD HH:mm:ss；                                                                     |
+| ^                 | error_file         | 记录标准错误流，\$HOME/.pm2/logs/XXXerr.log)，代码错误可在此文件查找                                           |
+| ^                 | out_file           | 记录标准输出流，\$HOME/.pm2/logs/XXXout.log)，如应用打印大量的标准输出，会导致 pm2 日志过大                    |
+| ^                 | combine_logs       | 是否合并日志（如果合并日志的话，不同进程公用一个日志文件）                                                     |
+| ^                 | merge_logs         | ^                                                                                                              |
+| ^                 | pid_file           | pid file path (default to \$HOME/.pm2/pid/app-pm_id.pid)                                                       |
+| Control flow      | min_uptime         | 应用运行少于时间被认为是异常启动                                                                               |
+| ^                 | listen_timeout     | 如果应用程序未侦听，则强制重新加载之前的时间（毫秒）                                                           |
+| ^                 | kill_timeout       | 发送最终 SIGKILL 之前的时间（毫秒）                                                                            |
+| ^                 | wait_ready         | Instead of reload waiting for listen event, wait for process.send(‘ready’)                                     |
+| ^                 | max_restarts       | 最大异常重启次数，即小于 min_uptime 运行时间重启次数                                                           |
+| ^                 | restart_delay      | 异常重启情况下，延时重启时间                                                                                   |
+| ^                 | autorestart        | 默认为 true, 发生异常的情况下自动重启                                                                          |
+| ^                 | cron_restart       | crontab 时间格式重启应用，目前只支持 cluster 模式                                                              |
+| ^                 | vizion             | true by default. if false, PM2 will start without vizion features (versioning control metadatas)               |
+| ^                 | post_update        | a list of commands which will be executed after you perform a Pull/Upgrade operation from Keymetrics dashboard |
+| ^                 | force              | 默认 false，如果 true，可以重复启动一个脚本。pm2 不建议这么做                                                  |
+| Deployment        | key                | SSH key path                                                                                                   |
+| ^                 | user               | SSH user                                                                                                       |
+| ^                 | host               | SSH host                                                                                                       |
+| ^                 | ssh_options        | SSH options with no command-line flag, see ‘man ssh’                                                           |
+| ^                 | ref                | GIT remote/branch                                                                                              |
+| ^                 | repo               | GIT remote                                                                                                     |
+| ^                 | path               | path in the server                                                                                             |
+| ^                 | pre-setup          | Pre-setup command or path to a script on your local machine                                                    |
+| ^                 | post-setup         | Post-setup commands or path to a script on the host machine                                                    |
+| ^                 | pre-deploy-local   | pre-deploy action                                                                                              |
+| ^                 | post-deploy        | post-deploy action                                                                                             |
 
 ---
 
